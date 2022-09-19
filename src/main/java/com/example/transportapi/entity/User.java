@@ -8,8 +8,9 @@ import org.hibernate.annotations.CreationTimestamp;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Entity
 @Data
+@Entity
+@Table(name = "app_user")
 @AllArgsConstructor
 @NoArgsConstructor
 public class User {
@@ -18,6 +19,8 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String username;
+    private String password;
     private String firstname;
     private String lastname;
     private String mobileNumber;
