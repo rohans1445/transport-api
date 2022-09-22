@@ -1,8 +1,10 @@
 package com.example.transportapi.security;
 
+import com.example.transportapi.entity.User;
 import com.example.transportapi.service.UserService;
 import com.example.transportapi.util.JwtUtil;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,45 +18,48 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@Log
-@Component
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtUtil jwtUtil;
-    private final UserService userService;
-
-    public JwtAuthenticationFilter(JwtUtil jwtUtil, UserService userService) {
-        this.jwtUtil = jwtUtil;
-        this.userService = userService;
-    }
+    @Autowired
+    private JwtUtil jwtUtil;
+    @Autowired
+    private UserService userService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        log.info(":::::::: inside JwtAuthenticationFilter");
+        log.debug(":::::::: JwtAuthenticationFilter invoked");
         String token = getTokenFromRequest(request);
 
         try {
             if(token != null && jwtUtil.validateToken(token)){
-                log.info(":::::::: Token validated successfully for user - " + jwtUtil.getUsernameFromToken(token));
-                CustomUserDetails userDetails = (CustomUserDetails) userService.loadUserByUsername(jwtUtil.getUsernameFromToken(token));
-                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails.getUsername(), userDetails.getPassword());
+                String usernameFromToken = jwtUtil.getUsernameFromToken(token);
+                log.debug(":::::::: Token validated successfully for user - " + usernameFromToken);
+                log.debug(":::::::: Token issued at - " + jwtUtil.getIssuedAt(token));
+                log.debug(":::::::: Token expiring at - " + jwtUtil.getExpiry(token));
+                CustomUserDetails userDetails = (CustomUserDetails) userService.loadUserByUsername(usernameFromToken);
+                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails.getUsername(), null, userDetails.getAuthorities());
                 auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                log.debug(":::::::: Setting Authentication...");
                 SecurityContextHolder.getContext().setAuthentication(auth);
+                log.debug(":::::::: Authentication set - {}", auth);
             }
         } catch (Exception e){
-            log.info(":::::::: JWT Filter error ");
-            throw new RuntimeException("Something went wrong while authenticating with JWT.", e.getCause());
+            log.debug(":::::::: Something went wrong while authenticating with JWT.");
         }
-
+        filterChain.doFilter(request, response);
     }
+
 
     private String getTokenFromRequest(HttpServletRequest request) {
 
         String token = request.getHeader("Authorization");
-        if(token != null){
+        if(token != null && token.startsWith("Bearer ")){
+            log.debug(":::::::: Token provided is well-formed");
             return token.substring(7);
         }
 
+        log.debug(":::::::: Token provided is not well-formed");
         return null;
     }
 }

@@ -22,7 +22,8 @@ public class BusPass {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private OfficeLocation officeLocation;
+
+    private String officeLocation;
 
     @Enumerated(EnumType.STRING)
     private BusPassType busPassType;
@@ -42,10 +43,11 @@ public class BusPass {
     private Route route;
     private Integer cost;
 
+    @Enumerated(EnumType.STRING)
     private BusPassStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinTable(name = "user_id")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @CreationTimestamp

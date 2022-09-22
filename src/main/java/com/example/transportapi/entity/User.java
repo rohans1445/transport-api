@@ -1,5 +1,6 @@
 package com.example.transportapi.entity;
 
+import com.example.transportapi.payload.RegisterRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,6 +26,7 @@ public class User {
     private String lastname;
     private String mobileNumber;
     private String email;
+    private String roles;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
     @JoinColumn(name = "address_id")
@@ -33,4 +35,13 @@ public class User {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
+    public User(RegisterRequest registerRequest) {
+        this.username = registerRequest.getUsername();
+        this.password = registerRequest.getPassword();
+        this.firstname = registerRequest.getFirstname();
+        this.lastname = registerRequest.getLastname();
+        this.mobileNumber = registerRequest.getMobileNumber();
+        this.email = registerRequest.getEmail();
+        this.address = registerRequest.getAddress();
+    }
 }
