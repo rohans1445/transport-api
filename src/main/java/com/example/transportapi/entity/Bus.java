@@ -4,8 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @AllArgsConstructor
@@ -16,10 +18,12 @@ public class Bus {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @JsonIgnore
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "bus")
-    private Route route;
+
     private String busNumber;
+
     private Integer seatingCapacity;
+
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 
 }

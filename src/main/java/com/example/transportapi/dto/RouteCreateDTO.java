@@ -14,4 +14,5 @@ public class RouteCreateDTO {
     private String name;
     private Shift shift;
     private Long officeLocationId;
+    private Long busId;
 }

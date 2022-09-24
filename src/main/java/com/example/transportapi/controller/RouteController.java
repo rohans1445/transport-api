@@ -39,14 +39,20 @@ public class RouteController {
     }
 
     @PostMapping("/routes")
-    public ResponseEntity<RouteCreateDTO> createNewRoute(@RequestBody RouteCreateDTO routeCreateDTO){
+    public ResponseEntity<RouteResponseDTO> createNewRoute(@RequestBody RouteCreateDTO routeCreateDTO){
         Route newRoute = routeService.createNewRoute(routeCreateDTO);
-        RouteCreateDTO createdRoute = RouteCreateDTO.builder()
-                .name(newRoute.getName())
-                .shift(newRoute.getShift())
-                .officeLocationId(newRoute.getOfficeLocation().getId())
-                .build();
-        return new ResponseEntity<>(createdRoute, HttpStatus.CREATED);
+        RouteResponseDTO res = mapper.toRouteResponseDTO(newRoute);
+        return new ResponseEntity<>(res, HttpStatus.CREATED);
     }
+
+    @PutMapping("/routes/{id}")
+    public ResponseEntity<RouteResponseDTO> updateRoute(@PathVariable("id") Long id, @RequestBody RouteCreateDTO routeCreateDTO){
+        Route route = routeService.getRouteById(id);
+        Route updatedRoute = routeService.updateRoute(routeCreateDTO, route);
+        RouteResponseDTO res = mapper.toRouteResponseDTO(updatedRoute);
+        return new ResponseEntity<>(res, HttpStatus.OK);
+    }
+
+
 
 }

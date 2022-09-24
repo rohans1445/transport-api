@@ -26,7 +26,7 @@ public class Route {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "route")
     private List<Stop> stops;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "bus_id")
     private Bus bus;
 
