@@ -1,5 +1,7 @@
 package com.example.transportapi.entity;
 
+import com.example.transportapi.entity.enums.Shift;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,10 +11,10 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Entity
 @Data
-@AllArgsConstructor
+@Entity
 @NoArgsConstructor
+@AllArgsConstructor
 public class Route {
 
     @Id
@@ -27,6 +29,13 @@ public class Route {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bus_id")
     private Bus bus;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "office_location_id")
+    private OfficeLocation officeLocation;
+
+    @Enumerated(EnumType.STRING)
+    private Shift shift;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

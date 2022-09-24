@@ -2,6 +2,7 @@ package com.example.transportapi.entity;
 
 import com.example.transportapi.entity.enums.BusPassStatus;
 import com.example.transportapi.entity.enums.BusPassType;
+import com.example.transportapi.entity.enums.Shift;
 import com.example.transportapi.entity.enums.TripType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,24 +24,27 @@ public class BusPass {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String officeLocation;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "office_location_id")
+    private OfficeLocation officeLocation;
+
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "shift_id")
+    private Shift shift;
 
     @Enumerated(EnumType.STRING)
     private BusPassType busPassType;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "busPass")
     private List<BookedDates> bookedDates;
 
     @Enumerated(EnumType.STRING)
     private TripType tripType;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "shift_id")
-    private Shift shift;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "route_id")
     private Route route;
+
     private Integer cost;
 
     @Enumerated(EnumType.STRING)
