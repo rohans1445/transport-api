@@ -28,8 +28,6 @@ public class BusPass {
     @JoinColumn(name = "office_location_id")
     private OfficeLocation officeLocation;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "shift_id")
     private Shift shift;
 
     @Enumerated(EnumType.STRING)
