@@ -1,3 +1,0 @@
---INSERT INTO `shift` (start_time, end_time) VALUES ('08:00', '18:00');
---INSERT INTO `shift` (start_time, end_time) VALUES ('10:00', '19:00');
---INSERT INTO `shift` (start_time, end_time) VALUES ('19:00', '05:00');

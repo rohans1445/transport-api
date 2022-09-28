@@ -33,19 +33,36 @@ public class RouteServiceImpl implements RouteService {
     }
 
     @Override
-    public Route createNewRoute(RouteCreateDTO routeCreateDTO) {
+    public Route saveRoute(RouteCreateDTO routeCreateDTO) {
         Route route = new Route();
+
+        Bus bus;
+
+        if(routeCreateDTO.getBusId() == null){
+            bus = null;
+        } else {
+            bus = busService.getBusById(routeCreateDTO.getBusId());
+        }
+
         OfficeLocation location = officeLocationService.getOfficeLocationById(routeCreateDTO.getOfficeLocationId());
+
         route.setName(routeCreateDTO.getName());
         route.setShift(routeCreateDTO.getShift());
         route.setOfficeLocation(location);
+        route.setBus(bus);
         return routeRepository.save(route);
     }
 
     @Override
     public Route updateRoute(RouteCreateDTO routeCreateDTO, Route routeToUpdate) {
+        Bus bus;
+        if(routeCreateDTO.getBusId() == null){
+            bus = null;
+        } else {
+            bus = busService.getBusById(routeCreateDTO.getBusId());
+        }
+
         OfficeLocation officeLocation = officeLocationService.getOfficeLocationById(routeCreateDTO.getOfficeLocationId());
-        Bus bus = busService.getBusById(routeCreateDTO.getBusId());
 
         routeToUpdate.setName(routeCreateDTO.getName());
         routeToUpdate.setShift(routeCreateDTO.getShift());

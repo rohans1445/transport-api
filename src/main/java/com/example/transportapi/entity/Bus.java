@@ -23,6 +23,7 @@ public class Bus {
 
     private Integer seatingCapacity;
 
+    @JsonIgnore
     @CreationTimestamp
     private LocalDateTime createdAt;
 

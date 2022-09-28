@@ -6,15 +6,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class OfficeLocationResponseDTO {
+public class OfficeLocationDTO {
     private Long id;
     private City city;
     private String location;
-    private LocalDateTime createdAt;
 }

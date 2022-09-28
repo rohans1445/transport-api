@@ -2,7 +2,7 @@ package com.example.transportapi.controller;
 
 import com.example.transportapi.mapper.OfficeLocationMapper;
 import com.example.transportapi.dto.OfficeLocationCreateDTO;
-import com.example.transportapi.dto.OfficeLocationResponseDTO;
+import com.example.transportapi.dto.OfficeLocationDTO;
 import com.example.transportapi.entity.OfficeLocation;
 import com.example.transportapi.service.OfficeLocationService;
 import org.springframework.http.HttpStatus;
@@ -24,23 +24,23 @@ public class OfficeLocationController {
     }
 
     @GetMapping("/officeLocation/{id}")
-    public ResponseEntity<OfficeLocationResponseDTO> getOfficeLocation(@PathVariable("id") Long id){
+    public ResponseEntity<OfficeLocationDTO> getOfficeLocation(@PathVariable("id") Long id){
         OfficeLocation officeLocation = officeLocationService.getOfficeLocationById(id);
-        OfficeLocationResponseDTO res = mapper.toOfficeLocationResponseDTO(officeLocation);
+        OfficeLocationDTO res = mapper.toOfficeLocationDTO(officeLocation);
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
     @GetMapping("/officeLocation")
-    public ResponseEntity<List<OfficeLocationResponseDTO>> getAllOfficeLocation(){
+    public ResponseEntity<List<OfficeLocationDTO>> getAllOfficeLocation(){
         List<OfficeLocation> officeLocations = officeLocationService.getAllOfficeLocations();
-        List<OfficeLocationResponseDTO> res = mapper.toOfficeLocationResponseDTOs(officeLocations);
+        List<OfficeLocationDTO> res = mapper.toOfficeLocationDTOs(officeLocations);
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
     @PostMapping("/officeLocation")
-    public ResponseEntity<OfficeLocationResponseDTO> createNewOfficeLocation(@RequestBody OfficeLocationCreateDTO officeLocationCreateDTO){
-        OfficeLocation officeLocation = officeLocationService.createOfficeLocation(mapper.toOfficeLocation(officeLocationCreateDTO));
-        OfficeLocationResponseDTO res = mapper.toOfficeLocationResponseDTO(officeLocation);
+    public ResponseEntity<OfficeLocationDTO> createNewOfficeLocation(@RequestBody OfficeLocationDTO officeLocationDTO){
+        OfficeLocation officeLocation = officeLocationService.createOfficeLocation(mapper.toOfficeLocation(officeLocationDTO));
+        OfficeLocationDTO res = mapper.toOfficeLocationDTO(officeLocation);
         return new ResponseEntity<>(res, HttpStatus.CREATED);
     }
 

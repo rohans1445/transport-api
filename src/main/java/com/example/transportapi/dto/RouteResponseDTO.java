@@ -1,6 +1,7 @@
 package com.example.transportapi.dto;
 
 import com.example.transportapi.entity.Bus;
+import com.example.transportapi.entity.OfficeLocation;
 import com.example.transportapi.entity.enums.Shift;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
@@ -17,7 +18,8 @@ import java.time.LocalDateTime;
 public class RouteResponseDTO {
     private Long id;
     private String name;
-    private Bus bus;
     private Shift shift;
-    private LocalDateTime createdAt;
+    private String city;
+    private String officeLocation;
+    private Bus bus;
 }

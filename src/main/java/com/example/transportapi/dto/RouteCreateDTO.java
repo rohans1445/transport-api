@@ -6,13 +6,24 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class RouteCreateDTO {
+
+    @NotBlank
     private String name;
+
+    @NotNull
     private Shift shift;
+
+    @NotNull(message = "Office Location id must not be null.")
     private Long officeLocationId;
+
     private Long busId;
+
 }

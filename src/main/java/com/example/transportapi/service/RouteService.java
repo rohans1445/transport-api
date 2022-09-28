@@ -7,7 +7,7 @@ public interface RouteService {
 
     Route getRouteById(Long id);
 
-    Route createNewRoute(RouteCreateDTO routeCreateDTO);
+    Route saveRoute(RouteCreateDTO routeCreateDTO);
 
     Route updateRoute(RouteCreateDTO routeCreateDTO, Route routeToUpdate);
 }
