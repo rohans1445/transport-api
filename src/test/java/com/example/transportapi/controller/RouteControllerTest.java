@@ -51,6 +51,7 @@ class RouteControllerTest {
     OfficeLocation officeLocation1;
     OfficeLocation officeLocation2;
     Bus bus1;
+    Bus bus2;
     Route route1;
     Route route2;
 
@@ -67,11 +68,16 @@ class RouteControllerTest {
         bus1 = new Bus();
         bus1.setBusNumber("A3434");
         bus1.setSeatingCapacity(25);
+        bus2 = new Bus();
+        bus2.setBusNumber("B3434");
+        bus2.setSeatingCapacity(25);
+
 
         route1 = new Route();
         route1.setName("test-route");
         route1.setOfficeLocation(officeLocation1);
         route1.setShift(Shift.MORNING);
+        route1.setBus(bus1);
 
         route2 = new Route();
         route2.setName("test-route2");
@@ -80,7 +86,7 @@ class RouteControllerTest {
 
         routeRepository.save(route1);
         routeRepository.save(route2);
-        busRepository.save(bus1);
+        busRepository.save(bus2);
     }
 
     @AfterEach
@@ -126,7 +132,7 @@ class RouteControllerTest {
                 .name("test-update-route")
                 .shift(Shift.AFTERNOON)
                 .officeLocationId(2L)
-                .busId(1L)
+                .busId(2L)
                 .build();
 
         mockMvc.perform(put("/api/routes/{id}", route2.getId())
@@ -136,7 +142,22 @@ class RouteControllerTest {
                 .andExpect(jsonPath("$.name", is("test-update-route")))
                 .andExpect(jsonPath("$.shift", is("AFTERNOON")))
                 .andExpect(jsonPath("$.officeLocation", is("TL-2")))
-                .andExpect(jsonPath("$.bus.busNumber", is("A3434")));
+                .andExpect(jsonPath("$.bus.busNumber", is("B3434")));
 
+    }
+
+    @Test
+    void givenExistingRoute_whenUpdateRouteBusDetailsWithBusAlreadyAssigned_thenResponse400() throws Exception {
+        RouteCreateDTO route = RouteCreateDTO.builder()
+                .name("test-update-route")
+                .shift(Shift.AFTERNOON)
+                .officeLocationId(officeLocation2.getId())
+                .busId(bus1.getId())
+                .build();
+
+        mockMvc.perform(put("/api/routes/{id}", route2.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(route)))
+                .andExpect(status().isBadRequest());
     }
 }

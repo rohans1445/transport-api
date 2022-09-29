@@ -1,6 +1,5 @@
 package com.example.transportapi.mapper;
 
-import com.example.transportapi.dto.OfficeLocationCreateDTO;
 import com.example.transportapi.dto.OfficeLocationDTO;
 import com.example.transportapi.entity.OfficeLocation;
 import org.mapstruct.Mapper;

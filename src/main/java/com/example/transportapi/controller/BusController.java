@@ -41,4 +41,11 @@ public class BusController {
         return new ResponseEntity<>(res, HttpStatus.CREATED);
     }
 
+    @GetMapping("/bus/available")
+    public ResponseEntity<List<BusResponseDTO>> getAvailableBusses(){
+        List<Bus> busList = busService.getAvailableBusses();
+        List<BusResponseDTO> res = mapper.toBusResponseDTOs(busList);
+        return new ResponseEntity<>(res, HttpStatus.OK);
+    }
+
 }

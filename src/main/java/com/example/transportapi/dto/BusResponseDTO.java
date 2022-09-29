@@ -15,5 +15,6 @@ public class BusResponseDTO {
     private Long id;
     private String busNumber;
     private Integer seatingCapacity;
+    private Long routeId;
 
 }

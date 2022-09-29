@@ -9,5 +9,4 @@ public interface RouteService {
 
     Route saveRoute(RouteCreateDTO routeCreateDTO);
 
-    Route updateRoute(RouteCreateDTO routeCreateDTO, Route routeToUpdate);
 }

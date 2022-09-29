@@ -15,6 +15,8 @@ import javax.validation.constraints.NotNull;
 @Builder
 public class RouteCreateDTO {
 
+    private Long id;
+
     @NotBlank
     private String name;
 

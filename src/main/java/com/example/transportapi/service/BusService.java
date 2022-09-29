@@ -11,6 +11,9 @@ public interface BusService {
 
     List<Bus> getAllBusses();
 
+    List<Bus> getAvailableBusses();
+
     Bus saveBus(BusCreateDTO busCreateDTO);
 
+    boolean isBusAssignedToRouteOtherThanGivenRoute(Long busId, Long routeId);
 }

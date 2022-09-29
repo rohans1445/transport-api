@@ -24,6 +24,10 @@ public class Bus {
     private Integer seatingCapacity;
 
     @JsonIgnore
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "bus")
+    private Route route;
+
+    @JsonIgnore
     @CreationTimestamp
     private LocalDateTime createdAt;
 

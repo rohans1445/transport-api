@@ -46,6 +46,7 @@ public class RouteController {
 
     @PostMapping("/routes")
     public ResponseEntity<RouteResponseDTO> createNewRoute(@Valid @RequestBody RouteCreateDTO routeCreateDTO){
+        routeCreateDTO.setId(0L);
         Route newRoute = routeService.saveRoute(routeCreateDTO);
         RouteResponseDTO res = mapper.toRouteResponseDTO(newRoute);
         return new ResponseEntity<>(res, HttpStatus.CREATED);
@@ -53,8 +54,8 @@ public class RouteController {
 
     @PutMapping("/routes/{id}")
     public ResponseEntity<RouteResponseDTO> updateRoute(@PathVariable("id") Long id, @RequestBody RouteCreateDTO routeCreateDTO){
-        Route route = routeService.getRouteById(id);
-        Route updatedRoute = routeService.updateRoute(routeCreateDTO, route);
+        routeCreateDTO.setId(id);
+        Route updatedRoute = routeService.saveRoute(routeCreateDTO);
         RouteResponseDTO res = mapper.toRouteResponseDTO(updatedRoute);
         return new ResponseEntity<>(res, HttpStatus.OK);
     }

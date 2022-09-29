@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,10 +31,24 @@ public class BusServiceImpl implements BusService {
     }
 
     @Override
+    public List<Bus> getAvailableBusses() {
+        List<Bus> busList = getAllBusses();
+
+        return busList.stream()
+                .filter(bus -> bus.getRoute() == null)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public Bus saveBus(BusCreateDTO busCreateDTO) {
         Bus bus = new Bus();
         bus.setBusNumber(busCreateDTO.getBusNumber());
         bus.setSeatingCapacity(busCreateDTO.getSeatingCapacity());
         return busRepository.save(bus);
+    }
+
+    @Override
+    public boolean isBusAssignedToRouteOtherThanGivenRoute(Long busId, Long routeId) {
+        return busRepository.isBusAssignedToRouteOtherThanGivenRoute(busId, routeId);
     }
 }
