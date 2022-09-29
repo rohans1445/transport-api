@@ -17,8 +17,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BusController {
 
-    private final BusService busService;
     private final BusMapper mapper;
+    private final BusService busService;
 
     @GetMapping("/bus/{id}")
     public ResponseEntity<BusResponseDTO> getBusById(@PathVariable("id") Long id){

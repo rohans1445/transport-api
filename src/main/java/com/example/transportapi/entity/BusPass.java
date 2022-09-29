@@ -5,12 +5,12 @@ import com.example.transportapi.entity.enums.BusPassType;
 import com.example.transportapi.entity.enums.Shift;
 import com.example.transportapi.entity.enums.TripType;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -18,6 +18,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class BusPass {
 
     @Id
@@ -28,13 +29,14 @@ public class BusPass {
     @JoinColumn(name = "office_location_id")
     private OfficeLocation officeLocation;
 
+    @Enumerated(EnumType.STRING)
     private Shift shift;
 
     @Enumerated(EnumType.STRING)
     private BusPassType busPassType;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "busPass")
-    private List<BookedDates> bookedDates;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "busPass", cascade = CascadeType.ALL)
+    private List<BookedDate> bookedDates;
 
     @Enumerated(EnumType.STRING)
     private TripType tripType;
