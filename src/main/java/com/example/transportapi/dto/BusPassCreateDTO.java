@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -19,11 +20,22 @@ import java.util.List;
 public class BusPassCreateDTO {
 
     private Long id;
+
+    @NotNull(message = "Office location id cannot be null")
     private Long officeLocationId;
+
+    @NotNull(message = "Shift cannot be null")
     private Shift shift;
+
+    @NotNull(message = "Bus pass type cannot be null")
     private BusPassType busPassType;
+
     private List<LocalDate> selectedDates;
+
+    @NotNull(message = "Trip type cannot be null")
     private TripType tripType;
+
+    @NotNull(message = "Route id cannot be null")
     private Long routeId;
 
 }

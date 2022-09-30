@@ -2,10 +2,10 @@ package com.example.transportapi.controller;
 
 import com.example.transportapi.entity.User;
 import com.example.transportapi.exception.InvalidInputException;
+import com.example.transportapi.payload.ApiResponse;
 import com.example.transportapi.payload.LoginRequest;
 import com.example.transportapi.payload.LoginResponse;
-import com.example.transportapi.payload.RegisterRequest;
-import com.example.transportapi.payload.RegisterResponse;
+import com.example.transportapi.dto.UserRegistrationDTO;
 import com.example.transportapi.service.UserService;
 import com.example.transportapi.util.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
 
 @Slf4j
 @RestController
@@ -35,7 +37,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> loginUser(@RequestBody LoginRequest loginRequest){
+    public ResponseEntity<LoginResponse> loginUser(@Valid @RequestBody LoginRequest loginRequest){
         UsernamePasswordAuthenticationToken UPauth = new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword());
         Authentication authentication = authenticationManager.authenticate(UPauth);
         log.debug(":::::::: Inside Auth Controller - Login request for user ["+ loginRequest.getUsername() +"]");
@@ -49,16 +51,19 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<User> registerUser(@RequestBody RegisterRequest registerRequest){
-        if(userService.ifUsernameExists(registerRequest.getUsername())){
+    public ResponseEntity<ApiResponse> registerUser(@Valid @RequestBody UserRegistrationDTO userRegistrationDTO){
+        if(userService.ifUsernameExists(userRegistrationDTO.getUsername())){
             throw new InvalidInputException("An account exists with that username.");
         }
-        if(userService.ifEmailExists(registerRequest.getEmail())){
+        if(userService.ifEmailExists(userRegistrationDTO.getEmail())){
             throw new InvalidInputException("An account exists with that email.");
         }
-        User user = new User(registerRequest);
-        User savedUser = userService.saveUser(user);
-        return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
+        User user = new User(userRegistrationDTO);
+        userService.saveUser(user);
+        ApiResponse res = new ApiResponse();
+        res.setStatus(HttpStatus.CREATED.name());
+        res.setMessage("User registered successfully");
+        return new ResponseEntity<>(res, HttpStatus.CREATED);
     }
 
 }

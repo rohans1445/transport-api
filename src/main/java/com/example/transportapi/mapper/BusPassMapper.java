@@ -6,6 +6,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
@@ -29,5 +30,7 @@ public interface BusPassMapper {
                         .collect(Collectors.toList()))
                 .build();
     }
+
+    List<BusPassResponseDTO> toBusPassResponseDTOs(List<BusPass> busPasses);
 
 }
