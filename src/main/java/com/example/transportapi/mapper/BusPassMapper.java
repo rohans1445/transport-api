@@ -23,10 +23,13 @@ public interface BusPassMapper {
                 .tripType(busPass.getTripType())
                 .issuedOn(busPass.getCreatedAt())
                 .routeName(busPass.getRoute().getName())
+                .pickupPointName(busPass.getPickupPoint().getName())
+                .expectedArrival(busPass.getPickupPoint().getExpectedArrival().toString())
                 .cost(busPass.getCost())
-                .selectedDates(busPass.getBookedDates()
+                .month(busPass.getMonth())
+                .selectedDates(busPass.getTrips()
                         .stream()
-                        .map(bookedDate -> LocalDate.parse(bookedDate.getDate().toString()))
+                        .map(trip -> LocalDate.parse(trip.getDate().toString()))
                         .collect(Collectors.toList()))
                 .build();
     }

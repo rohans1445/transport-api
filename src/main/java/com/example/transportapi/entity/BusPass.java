@@ -12,6 +12,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.List;
 
 @Entity
@@ -35,8 +36,11 @@ public class BusPass {
     @Enumerated(EnumType.STRING)
     private BusPassType busPassType;
 
+    @Enumerated(EnumType.STRING)
+    private Month month;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "busPass", cascade = CascadeType.ALL)
-    private List<BookedDate> bookedDates;
+    private List<Trip> trips;
 
     @Enumerated(EnumType.STRING)
     private TripType tripType;
@@ -44,6 +48,10 @@ public class BusPass {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "route_id")
     private Route route;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pickup_point_stop_id")
+    private Stop pickupPoint;
 
     private Integer cost;
 
