@@ -5,19 +5,21 @@ import com.example.transportapi.entity.enums.BusPassType;
 import com.example.transportapi.entity.enums.Shift;
 import com.example.transportapi.entity.enums.TripType;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.List;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class BusPass {
 
     @Id
@@ -28,13 +30,17 @@ public class BusPass {
     @JoinColumn(name = "office_location_id")
     private OfficeLocation officeLocation;
 
+    @Enumerated(EnumType.STRING)
     private Shift shift;
 
     @Enumerated(EnumType.STRING)
     private BusPassType busPassType;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "busPass")
-    private List<BookedDates> bookedDates;
+    @Enumerated(EnumType.STRING)
+    private Month month;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "busPass", cascade = CascadeType.ALL)
+    private List<Trip> trips;
 
     @Enumerated(EnumType.STRING)
     private TripType tripType;
@@ -42,6 +48,10 @@ public class BusPass {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "route_id")
     private Route route;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pickup_point_stop_id")
+    private Stop pickupPoint;
 
     private Integer cost;
 

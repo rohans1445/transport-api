@@ -13,4 +13,5 @@ public interface BusRepository extends JpaRepository<Bus, Long> {
             "FROM Route r WHERE r.bus.id = :busId and r.id != :routeId")
     boolean isBusAssignedToRouteOtherThanGivenRoute(Long busId, Long routeId);
 
+    Bus findByBusNumber(String number);
 }
