@@ -18,5 +18,5 @@ public interface UserService extends UserDetailsService {
 
     User getCurrentUser();
 
-    List<BusPassResponseDTO> getUserPasses();
+    List<BusPassResponseDTO> getUserPasses(String username);
 }

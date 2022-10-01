@@ -86,7 +86,7 @@ public class BusPassServiceImpl implements BusPassService {
         }
 
         // prevent booking HYBRID - if selected dates are less than set amount
-        if(busPassCreateDTO.getSelectedDates().size() < MINIMUM_DAYS_REQUIRED_FOR_HYBRID_PASS){
+    if(busPassCreateDTO.getBusPassType().equals(BusPassType.HYBRID) && busPassCreateDTO.getSelectedDates().size() < MINIMUM_DAYS_REQUIRED_FOR_HYBRID_PASS){
             throw new InvalidInputException(String.format("Must select atleast [%d] days for pass type [HYBRID]", MINIMUM_DAYS_REQUIRED_FOR_HYBRID_PASS));
         }
 
@@ -123,7 +123,7 @@ public class BusPassServiceImpl implements BusPassService {
     private boolean areDatesValid(List<LocalDate> selectedDates) {
         LocalDate now = LocalDate.now();
         for(LocalDate date : selectedDates){
-            if(date.getYear() != now.getYear()){
+            if(date.getYear() != now.getYear() || date.isBefore(now)){
                 return false;
             }
         }
@@ -140,7 +140,8 @@ public class BusPassServiceImpl implements BusPassService {
     }
 
     private boolean checkIfBusPassExistsForGivenMonth(Month month){
-        List<BusPassResponseDTO> currentUserPasses = userService.getUserPasses();
+        User currentUser = userService.getCurrentUser();
+        List<BusPassResponseDTO> currentUserPasses = userService.getUserPasses(currentUser.getUsername());
         for(BusPassResponseDTO pass : currentUserPasses){
             if((pass.getBusPassType().equals(BusPassType.HYBRID) || pass.getBusPassType().equals(BusPassType.MONTHLY))
                 && pass.getMonth().equals(month)){

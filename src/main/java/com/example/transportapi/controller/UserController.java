@@ -24,8 +24,8 @@ public class UserController {
     }
 
     @GetMapping("/user/{username}/buspass")
-    public ResponseEntity<List<BusPassResponseDTO>> getUsersPasses(){
-        List<BusPassResponseDTO> userPasses = userService.getUserPasses();
+    public ResponseEntity<List<BusPassResponseDTO>> getUsersPasses(@PathVariable("username") String username){
+        List<BusPassResponseDTO> userPasses = userService.getUserPasses(username);
         return new ResponseEntity<>(userPasses, HttpStatus.OK);
     }
 

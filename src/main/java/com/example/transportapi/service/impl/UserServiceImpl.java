@@ -8,6 +8,7 @@ import com.example.transportapi.repository.UserRepository;
 import com.example.transportapi.security.CustomUserDetails;
 import com.example.transportapi.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,6 +16,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -67,9 +69,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<BusPassResponseDTO> getUserPasses() {
-        User currentUser = getCurrentUser();
-        List<BusPass> passes = currentUser.getPasses();
+    @PreAuthorize("hasRole('ADMIN') or authentication.name == #username")
+    public List<BusPassResponseDTO> getUserPasses(String username) {
+        User user = findByUsername(username);
+        List<BusPass> passes = user.getPasses();
         return busPassMapper.toBusPassResponseDTOs(passes);
     }
 }
