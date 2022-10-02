@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class ApiResponse {
-    private String status;
+    private Integer status;
     private String message;
 }
