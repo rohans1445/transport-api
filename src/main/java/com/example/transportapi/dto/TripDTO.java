@@ -1,5 +1,6 @@
 package com.example.transportapi.dto;
 
+import com.example.transportapi.entity.enums.TripStatus;
 import com.example.transportapi.entity.enums.TripType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,12 +18,14 @@ public class TripDTO {
 
     private Long tripId;
     private LocalDate date;
-    private boolean userHasBoarded;
+    private TripStatus status;
     private TripType tripType;
     private String shiftStartTime;
     private String shiftEndTime;
     private String busRegNumber;
     private String pickUpPointName;
     private LocalTime pickUpTime;
+    private Integer verificationToken;
+    private boolean tripVerified;
 
 }

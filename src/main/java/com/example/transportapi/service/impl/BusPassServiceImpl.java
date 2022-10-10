@@ -5,11 +5,14 @@ import com.example.transportapi.dto.BusPassResponseDTO;
 import com.example.transportapi.entity.*;
 import com.example.transportapi.entity.enums.BusPassStatus;
 import com.example.transportapi.entity.enums.BusPassType;
+import com.example.transportapi.entity.enums.TripStatus;
+import com.example.transportapi.entity.enums.TripType;
 import com.example.transportapi.exception.InvalidInputException;
 import com.example.transportapi.exception.ResourceNotFoundException;
 import com.example.transportapi.repository.BusPassRepository;
 import com.example.transportapi.service.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -18,12 +21,15 @@ import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 import static com.example.transportapi.entity.enums.BusPassStatus.ACTIVE;
 import static com.example.transportapi.entity.enums.BusPassType.*;
 import static com.example.transportapi.entity.enums.BusPassType.HYBRID;
+import static com.example.transportapi.entity.enums.TripType.*;
 import static com.example.transportapi.util.AppConstants.*;
+import static java.util.stream.Collectors.*;
 
 @Service
 @RequiredArgsConstructor
@@ -43,6 +49,13 @@ public class BusPassServiceImpl implements BusPassService {
         OfficeLocation officeLocation = officeLocationService.getOfficeLocationById(busPassCreateDTO.getOfficeLocationId());
         Route route = routeService.getRouteById(busPassCreateDTO.getRouteId());
         Stop pickupPoint = stopService.getStopById(busPassCreateDTO.getPickupPointId());
+        Random random = new Random();
+
+        // handle monthly passes
+        if(busPassCreateDTO.getBusPassType().equals(MONTHLY)){
+            List<LocalDate> datesForMonth = getDatesForMonth(busPassCreateDTO.getMonth());
+            busPassCreateDTO.setSelectedDates(datesForMonth);
+        }
 
         // handle duplicate bus passes - for HYBRID & MONTHLY
         if((busPassCreateDTO.getBusPassType().equals(HYBRID) ||
@@ -53,11 +66,9 @@ public class BusPassServiceImpl implements BusPassService {
             );
         }
 
-
-        // handle monthly passes
-        if(busPassCreateDTO.getBusPassType().equals(MONTHLY)){
-            List<LocalDate> datesForMonth = getDatesForMonth(busPassCreateDTO.getMonth());
-            busPassCreateDTO.setSelectedDates(datesForMonth);
+        //handle duplicate bus passes - for SINGLE
+        if(busPassCreateDTO.getBusPassType().equals(SINGLE) && checkIfBusPassExistsForGivenDate(busPassCreateDTO.getSelectedDates().get(0))){
+            throw new InvalidInputException("A pass already exists for given date.");
         }
 
         // check for invalid dates
@@ -82,8 +93,8 @@ public class BusPassServiceImpl implements BusPassService {
         }
 
         // check if user has selected dates other than given month for bus pass type HYBRID
-        if(busPassCreateDTO.getBusPassType().equals(HYBRID) &&
-                !areDatesFromGivenMonth(busPassCreateDTO.getSelectedDates(), busPassCreateDTO.getMonth())){
+//        if(busPassCreateDTO.getBusPassType().equals(HYBRID) &&
+        if(!areDatesFromGivenMonth(busPassCreateDTO.getSelectedDates(), busPassCreateDTO.getMonth())){
             throw new InvalidInputException("Dates selected are not from the given month ["+ busPassCreateDTO.getMonth() +"]");
         }
 
@@ -93,7 +104,7 @@ public class BusPassServiceImpl implements BusPassService {
         }
 
         // prevent booking HYBRID - if selected dates are less than set amount
-    if(busPassCreateDTO.getBusPassType().equals(HYBRID) && busPassCreateDTO.getSelectedDates().size() < MINIMUM_DAYS_REQUIRED_FOR_HYBRID_PASS){
+        if(busPassCreateDTO.getBusPassType().equals(HYBRID) && busPassCreateDTO.getSelectedDates().size() < MINIMUM_DAYS_REQUIRED_FOR_HYBRID_PASS){
             throw new InvalidInputException(String.format("Must select atleast [%d] days for pass type [HYBRID]", MINIMUM_DAYS_REQUIRED_FOR_HYBRID_PASS));
         }
 
@@ -110,21 +121,36 @@ public class BusPassServiceImpl implements BusPassService {
                 .user(currentUser)
                 .build();
 
-        // convert date objects to Trip objects
+
+        // convert dates from DTO -> to Trip objects based on PassType & TripType
+        @SuppressWarnings("OptionalGetWithoutIsPresent")
         List<Trip> bookedTrips = busPassCreateDTO.getSelectedDates()
-                .stream()
-                .map(date -> Trip.builder()
-                        .busPass(busPass)
-                        .userHasBoarded(false)
-                        .date(date)
-                        .build())
-                .collect(Collectors.toList());
+                        .stream()
+                                .map(date -> Trip.builder()
+                                        .date(date)
+                                        .busPass(busPass)
+                                        .status(TripStatus.ACTIVE)
+                                        .tripType(busPassCreateDTO.getTripType())
+                                        .tripVerified(false)
+                                        .verificationToken(random.ints(1, 1000, 9999).findFirst().getAsInt())
+                                        .build())
+                                .collect(toList());
 
 
         busPass.setTrips(bookedTrips);
 
 
         return busPassRepository.save(busPass);
+    }
+
+    private boolean checkIfBusPassExistsForGivenDate(LocalDate localDate) {
+        User currentUser = userService.getCurrentUser();
+        List<BusPass> passes = currentUser.getPasses();
+        return passes.stream()
+                .anyMatch(pass -> pass.getTrips()
+                        .stream()
+                        .anyMatch(trip -> trip.getDate().equals(localDate))
+                );
     }
 
     private List<LocalDate> getDatesForMonth(Month month) {
@@ -159,13 +185,10 @@ public class BusPassServiceImpl implements BusPassService {
     private boolean checkIfBusPassExistsForGivenMonth(Month month){
         User currentUser = userService.getCurrentUser();
         List<BusPassResponseDTO> currentUserPasses = userService.getUserPasses(currentUser.getUsername());
-        for(BusPassResponseDTO pass : currentUserPasses){
-            if((pass.getBusPassType().equals(HYBRID) || pass.getBusPassType().equals(MONTHLY))
-                && pass.getMonth().equals(month)){
-                return true;
-            }
-        }
-        return false;
+        return currentUserPasses.stream()
+                .anyMatch(pass -> (pass.getBusPassType().equals(HYBRID) ||
+                        pass.getBusPassType().equals(MONTHLY)) &&
+                        pass.getMonth().equals(month));
     }
 
     private Integer calculateCost(BusPassCreateDTO busPassCreateDTO) {
