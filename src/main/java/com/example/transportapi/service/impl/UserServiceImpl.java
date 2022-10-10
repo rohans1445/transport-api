@@ -69,7 +69,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @PreAuthorize("hasRole('ADMIN') or authentication.name == #username")
     public List<BusPassResponseDTO> getUserPasses(String username) {
         User user = findByUsername(username);
         List<BusPass> passes = user.getPasses();
