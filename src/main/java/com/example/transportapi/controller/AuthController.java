@@ -61,7 +61,7 @@ public class AuthController {
         User user = new User(userRegistrationDTO);
         userService.saveUser(user);
         ApiResponse res = new ApiResponse();
-        res.setStatus(HttpStatus.CREATED.name());
+        res.setStatus(HttpStatus.CREATED.value());
         res.setMessage("User registered successfully");
         return new ResponseEntity<>(res, HttpStatus.CREATED);
     }

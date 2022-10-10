@@ -13,7 +13,6 @@ public interface TripMapper {
     @Mapping(source = "id", target = "tripId")
     @Mapping(source = "busPass.shift.startTime", target = "shiftStartTime")
     @Mapping(source = "busPass.shift.endTime", target = "shiftEndTime")
-    @Mapping(source = "busPass.tripType", target = "tripType")
     @Mapping(source = "busPass.route.bus.busNumber", target = "busRegNumber")
     @Mapping(source = "busPass.pickupPoint.name", target = "pickUpPointName")
     @Mapping(source = "busPass.pickupPoint.expectedArrival", target = "pickUpTime")

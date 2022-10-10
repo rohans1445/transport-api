@@ -30,7 +30,7 @@ public interface BusPassMapper {
                 .selectedDates(busPass.getTrips()
                         .stream()
                         .map(trip -> LocalDate.parse(trip.getDate().toString()))
-                        .collect(Collectors.toList()))
+                        .collect(Collectors.toSet()))
                 .build();
     }
 
