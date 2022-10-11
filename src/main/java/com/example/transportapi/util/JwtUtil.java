@@ -24,7 +24,7 @@ public class JwtUtil {
         return Jwts.builder()
                 .signWith(SignatureAlgorithm.HS512, "secret")
                 .setSubject(authentication.getName())
-                .setSubject(username)
+//                .setSubject(username)
                 .setIssuedAt(now)
                 .setExpiration(expiry)
                 .compact();

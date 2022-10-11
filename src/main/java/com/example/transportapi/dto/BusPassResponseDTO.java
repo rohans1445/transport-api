@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -29,7 +30,7 @@ public class BusPassResponseDTO {
     private String pickupPointName;
     private String expectedArrival;
     private Month month;
-    private List<LocalDate> selectedDates;
+    private Set<LocalDate> selectedDates;
     private LocalDateTime issuedOn;
 
 }

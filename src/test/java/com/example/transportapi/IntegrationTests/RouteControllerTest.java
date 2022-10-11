@@ -1,4 +1,4 @@
-package com.example.transportapi.controller;
+package com.example.transportapi.IntegrationTests;
 
 import com.example.transportapi.dto.RouteCreateDTO;
 import com.example.transportapi.entity.Bus;
@@ -104,7 +104,7 @@ class RouteControllerTest {
 
     @Test
     void givenRouteId_whenGetRouteByID_thenReturnRoute() throws Exception {
-        mockMvc.perform(get("/api/routes/{id}", officeLocation1.getId()))
+        mockMvc.perform(get("/api/routes/{id}", route1.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is("test-route")));
     }
@@ -131,10 +131,11 @@ class RouteControllerTest {
         RouteCreateDTO route = RouteCreateDTO.builder()
                 .name("test-update-route")
                 .shift(Shift.AFTERNOON)
-                .officeLocationId(2L)
-                .busId(2L)
+                .officeLocationId(officeLocation2.getId())
+                .busId(bus2.getId())
                 .build();
 
+        // update route2
         mockMvc.perform(put("/api/routes/{id}", route2.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(route)))

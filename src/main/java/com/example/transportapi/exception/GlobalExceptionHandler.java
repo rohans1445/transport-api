@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidInputException.class)
     public ResponseEntity<?> handleInvalidInput(InvalidInputException e){
         ApiResponse res = new ApiResponse();
-        res.setStatus(HttpStatus.BAD_REQUEST.name());
+        res.setStatus(HttpStatus.BAD_REQUEST.value());
         res.setMessage(e.getMessage());
         return new ResponseEntity<>(res, HttpStatus.BAD_REQUEST);
     }
@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleResourceNotFound(ResourceNotFoundException e){
         ApiResponse res = ApiResponse.builder()
                 .message(e.getMessage())
-                .status(HttpStatus.NOT_FOUND.name())
+                .status(HttpStatus.NOT_FOUND.value())
                 .build();
         return new ResponseEntity<>(res, HttpStatus.NOT_FOUND);
     }
@@ -62,7 +62,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ApiResponse> handleAccessDenied(AccessDeniedException e){
         ApiResponse res = ApiResponse.builder()
-                .status(HttpStatus.FORBIDDEN.name())
+                .status(HttpStatus.FORBIDDEN.value())
                 .message("Access is denied.")
                 .build();
         return new ResponseEntity<>(res, HttpStatus.FORBIDDEN);

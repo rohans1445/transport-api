@@ -1,4 +1,4 @@
-package com.example.transportapi.entity;
+package com.example.transportapi.dto;
 
 import com.example.transportapi.entity.enums.TripStatus;
 import com.example.transportapi.entity.enums.TripType;
@@ -7,32 +7,24 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity
-public class Trip {
+public class TripDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+    private Long tripId;
     private LocalDate date;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "buspass_id")
-    private BusPass busPass;
-
-    @Enumerated(EnumType.STRING)
     private TripStatus status;
-
-    @Enumerated(EnumType.STRING)
     private TripType tripType;
-
+    private String shiftStartTime;
+    private String shiftEndTime;
+    private String busRegNumber;
+    private String pickUpPointName;
+    private LocalTime pickUpTime;
     private Integer verificationToken;
     private boolean tripVerified;
 

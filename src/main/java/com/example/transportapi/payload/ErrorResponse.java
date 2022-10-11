@@ -10,7 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ErrorResponse {
-    private int status;
+    private Integer status;
     private String message;
     List<String> errors;
 }

@@ -37,6 +37,7 @@ public class BusPass {
     private BusPassType busPassType;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "selected_month")
     private Month month;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "busPass", cascade = CascadeType.ALL)

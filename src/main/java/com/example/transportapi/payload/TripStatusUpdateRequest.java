@@ -1,15 +1,13 @@
 package com.example.transportapi.payload;
 
+import com.example.transportapi.entity.enums.TripStatus;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class ApiResponse {
-    private Integer status;
-    private String message;
+@AllArgsConstructor
+public class TripStatusUpdateRequest {
+    private TripStatus status;
 }

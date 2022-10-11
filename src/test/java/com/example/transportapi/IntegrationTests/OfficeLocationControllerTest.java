@@ -1,4 +1,4 @@
-package com.example.transportapi.controller;
+package com.example.transportapi.IntegrationTests;
 
 import com.example.transportapi.entity.OfficeLocation;
 import com.example.transportapi.entity.enums.City;

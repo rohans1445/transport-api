@@ -8,4 +8,6 @@ public interface BusPassService {
     BusPass saveBusPass(BusPassCreateDTO busPassCreateDTO);
 
     BusPass getBusPassById(Long id);
+
+    BusPass getCurrentActiveBusPassForUser(String username);
 }
