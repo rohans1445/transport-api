@@ -3,10 +3,7 @@ package com.example.transportapi.service.impl;
 import com.example.transportapi.dto.BusPassCreateDTO;
 import com.example.transportapi.dto.BusPassResponseDTO;
 import com.example.transportapi.entity.*;
-import com.example.transportapi.entity.enums.BusPassStatus;
-import com.example.transportapi.entity.enums.BusPassType;
-import com.example.transportapi.entity.enums.TripStatus;
-import com.example.transportapi.entity.enums.TripType;
+import com.example.transportapi.entity.enums.*;
 import com.example.transportapi.exception.InvalidInputException;
 import com.example.transportapi.exception.ResourceNotFoundException;
 import com.example.transportapi.repository.BusPassRepository;
@@ -15,9 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.Month;
-import java.time.Period;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -108,6 +103,11 @@ public class BusPassServiceImpl implements BusPassService {
             throw new InvalidInputException(String.format("Must select atleast [%d] days for pass type [HYBRID]", MINIMUM_DAYS_REQUIRED_FOR_HYBRID_PASS));
         }
 
+        // check for cutoff time of date booking for SINGLE
+        if(!checkCutOffTimeForBooking(busPassCreateDTO.getSelectedDates(), busPassCreateDTO.getShift())){
+            throw new InvalidInputException(String.format("Cannot book pass within [%d] hours of journey start time.", CUTOFF_TIME_FOR_PASS_BOOKING_IN_HOURS));
+        }
+
         BusPass busPass = BusPass.builder()
                 .officeLocation(officeLocation)
                 .route(route)
@@ -141,6 +141,15 @@ public class BusPassServiceImpl implements BusPassService {
 
 
         return busPassRepository.save(busPass);
+    }
+
+    private boolean checkCutOffTimeForBooking(List<LocalDate> selectedDates, Shift shift) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalTime shiftStartTime = LocalTime.parse(shift.getStartTime());
+
+        // if current time is BEFORE the shift start time MINUS the CUTOFF time
+        return selectedDates.stream()
+                .allMatch(date -> now.isBefore(shiftStartTime.atDate(date).minusHours(CUTOFF_TIME_FOR_PASS_BOOKING_IN_HOURS)));
     }
 
     private boolean checkIfBusPassExistsForGivenDate(LocalDate localDate) {
