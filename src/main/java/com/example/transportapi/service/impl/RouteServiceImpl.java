@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import java.util.Objects;
 import java.util.Optional;
 
+import static com.example.transportapi.util.AppConstants.ROUTE_NOT_FOUND;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -30,7 +32,7 @@ public class RouteServiceImpl implements RouteService {
     @Override
     public Route getRouteById(Long id) {
         Optional<Route> routeOptional = routeRepository.findById(id);
-        routeOptional.orElseThrow(() -> new ResourceNotFoundException("Cannot find route with id - " + id));
+        routeOptional.orElseThrow(() -> new ResourceNotFoundException(ROUTE_NOT_FOUND + id));
         return routeOptional.get();
     }
 

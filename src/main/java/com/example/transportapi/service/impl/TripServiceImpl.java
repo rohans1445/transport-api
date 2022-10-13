@@ -20,6 +20,7 @@ import java.util.Objects;
 
 import static com.example.transportapi.entity.enums.TripStatus.CANCELLED;
 import static com.example.transportapi.util.AppConstants.CUTOFF_TIME_FOR_TRIP_CANCELLATION_IN_HOURS;
+import static com.example.transportapi.util.AppConstants.TRIP_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -30,12 +31,12 @@ public class TripServiceImpl implements TripService {
 
     @Override
     public Trip getTripById(Long id) {
-        return tripRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Couldn't find Trip with id - " + id));
+        return tripRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(TRIP_NOT_FOUND + id));
     }
 
     @Override
     public Trip updateTripStatus(Long id, TripStatusUpdateRequest updateRequest) {
-        Trip trip = tripRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Couldn't find Trip with id - "+ id));
+        Trip trip = tripRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(TRIP_NOT_FOUND + id));
 
         if(updateRequest.getStatus().equals(CANCELLED)){
             if(!checkCutoffTimeForTripCancellation(trip)){

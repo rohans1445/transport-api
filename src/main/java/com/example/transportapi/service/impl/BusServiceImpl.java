@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.example.transportapi.util.AppConstants.BUS_NOT_FOUND;
+
 @Service
 @RequiredArgsConstructor
 public class BusServiceImpl implements BusService {
@@ -21,7 +23,7 @@ public class BusServiceImpl implements BusService {
     @Override
     public Bus getBusById(Long id) {
         Optional<Bus> bus = busRepository.findById(id);
-        bus.orElseThrow(() -> new ResourceNotFoundException("Couldn't find bus with id - " + id));
+        bus.orElseThrow(() -> new ResourceNotFoundException(BUS_NOT_FOUND + id));
         return bus.get();
     }
 
