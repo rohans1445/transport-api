@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.example.transportapi.util.AppConstants.LOCATION_NOT_FOUND;
+
 @Service
 public class OfficeLocationServiceImpl implements OfficeLocationService {
 
@@ -22,7 +24,7 @@ public class OfficeLocationServiceImpl implements OfficeLocationService {
     @Override
     public OfficeLocation getOfficeLocationById(Long id) {
         Optional<OfficeLocation> officeLocationOptional = officeLocationRepository.findById(id);
-        officeLocationOptional.orElseThrow(() -> new ResourceNotFoundException("Cannot find office location by id - " + id));
+        officeLocationOptional.orElseThrow(() -> new ResourceNotFoundException(LOCATION_NOT_FOUND + id));
         return officeLocationOptional.get();
     }
 

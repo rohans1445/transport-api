@@ -20,6 +20,8 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
+import static com.example.transportapi.util.AppConstants.USER_NOT_FOUND;
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -31,14 +33,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<User> user = userRepository.findByUsername(username);
-        user.orElseThrow(() -> new UsernameNotFoundException("Cannot find user with username - " + username));
+        user.orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND + username));
         return user.map(CustomUserDetails::new).get();
     }
 
     @Override
     public User findByUsername(String username) {
         Optional<User> user = userRepository.findByUsername(username);
-        user.orElseThrow(() -> new UsernameNotFoundException("Cannot find user with username - " + username));
+        User user1 = user.orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND + username));
         return user.get();
     }
 

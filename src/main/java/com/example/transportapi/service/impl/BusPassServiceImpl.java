@@ -210,7 +210,7 @@ public class BusPassServiceImpl implements BusPassService {
     @Override
     public BusPass getBusPassById(Long id) {
         Optional<BusPass> busPassOptional = busPassRepository.findById(id);
-        busPassOptional.orElseThrow(() -> new ResourceNotFoundException("Couldn't find Buss Pass with id - " + id));
+        busPassOptional.orElseThrow(() -> new ResourceNotFoundException(BUSPASS_NOT_FOUND + id));
         return busPassOptional.get();
     }
 

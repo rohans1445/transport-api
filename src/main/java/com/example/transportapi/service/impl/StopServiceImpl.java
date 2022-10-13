@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+import static com.example.transportapi.util.AppConstants.STOP_NOT_FOUND;
+
 @Service
 public class StopServiceImpl implements StopService {
 
@@ -26,7 +28,7 @@ public class StopServiceImpl implements StopService {
     @Override
     public Stop getStopById(Long id) {
         Optional<Stop> stopOptional = stopRepository.findById(id);
-        stopOptional.orElseThrow(() -> new ResourceNotFoundException("Couldn't find stop with id - " + id));
+        stopOptional.orElseThrow(() -> new ResourceNotFoundException(STOP_NOT_FOUND + id));
         return stopOptional.get();
     }
 
