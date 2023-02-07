@@ -46,11 +46,4 @@ public class StopController {
         StopResponseDTO res = mapper.toStopResponseDTO(savedStop);
         return new ResponseEntity<>(res, HttpStatus.CREATED);
     }
-
-    @GetMapping("routes/{routeId}/stops")
-    public ResponseEntity<List<StopResponseDTO>> getAllStopsForRoute(@PathVariable("routeId") Long routeId){
-        Route route = routeService.getRouteById(routeId);
-        List<StopResponseDTO> res = mapper.toStopResponseDTOs(route.getStops());
-        return new ResponseEntity<>(res, HttpStatus.OK);
-    }
 }

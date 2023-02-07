@@ -1,6 +1,7 @@
 package com.example.transportapi.controller;
 
 import com.example.transportapi.dto.BusPassResponseDTO;
+import com.example.transportapi.dto.CurrentUserDTO;
 import com.example.transportapi.entity.User;
 import com.example.transportapi.mapper.BusPassMapper;
 import com.example.transportapi.service.BusPassService;
@@ -28,8 +29,8 @@ public class UserController {
     private final BusPassMapper busPassMapper;
 
     @GetMapping("/user/me")
-    public ResponseEntity<User> getUserDetails(){
-        User currentUser = userService.getCurrentUser();
+    public ResponseEntity<CurrentUserDTO> getUserDetails(){
+        CurrentUserDTO currentUser = new CurrentUserDTO(userService.getCurrentUser());
         return new ResponseEntity<>(currentUser, HttpStatus.OK);
     }
 

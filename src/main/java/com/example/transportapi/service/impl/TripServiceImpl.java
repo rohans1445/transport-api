@@ -12,6 +12,7 @@ import com.example.transportapi.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -36,7 +37,7 @@ public class TripServiceImpl implements TripService {
 
     @Override
     public Trip updateTripStatus(Long id, TripStatusUpdateRequest updateRequest) {
-        Trip trip = tripRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(TRIP_NOT_FOUND + id));
+        Trip trip = getTripById(id);
 
         if(updateRequest.getStatus().equals(CANCELLED)){
             if(!checkCutoffTimeForTripCancellation(trip)){
@@ -63,6 +64,14 @@ public class TripServiceImpl implements TripService {
     @Override
     public boolean verifyTrip(Long id, Integer verificationToken) {
         Trip trip = getTripById(id);
+
+        if(LocalDate.now().isBefore(trip.getDate())){
+            throw new InvalidInputException("Cannot verify trip before it has begun.");
+        }
+
+        if(trip.isTripVerified()){
+            throw new InvalidInputException("Trip is already verified.");
+        }
 
         if(trip.getStatus().equals(CANCELLED)){
             throw new InvalidInputException("Cannot verify a cancelled trip.");

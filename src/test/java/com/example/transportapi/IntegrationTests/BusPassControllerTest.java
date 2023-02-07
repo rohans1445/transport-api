@@ -26,6 +26,7 @@ import static com.example.transportapi.entity.enums.BusPassType.*;
 import static com.example.transportapi.entity.enums.Shift.MORNING;
 import static com.example.transportapi.entity.enums.TripType.BOTH;
 import static org.hamcrest.CoreMatchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -72,6 +73,7 @@ class BusPassControllerTest {
     Stop stop2;
     BusPass pass1;
     User user1;
+    User admin;
 
     @BeforeEach
     void setUp() {
@@ -129,7 +131,21 @@ class BusPassControllerTest {
         user1.setMobileNumber("94948485");
         user1.setUsername("testuser1");
 
+        admin = new User();
+        Address address1 = new Address();
+        address1.setCity(String.valueOf(City.MUMBAI));
+        address1.setHouseAddress("Test address 123");
+        address1.setState("TEST_STATE");
+        address1.setPincode("363603");
+        admin.setRoles("ROLE_ADMIN");
+        admin.setPassword(passwordEncoder.encode("pass"));
+        admin.setEmail("test@email.com");
+        admin.setAddress(address1);
+        admin.setMobileNumber("9438485");
+        admin.setUsername("admin");
+
         userRepository.save(user1);
+        userRepository.save(admin);
         routeRepository.save(route1);
         routeRepository.save(route2);
         busRepository.save(bus2);
@@ -185,19 +201,6 @@ class BusPassControllerTest {
                 .andExpect(jsonPath("$.tripType", is("BOTH")))
                 .andDo(print());
 
-    }
-
-
-    @Test
-    void getBusPassById() {
-    }
-
-    @Test
-    void getTripsForAPass() {
-    }
-
-    @Test
-    void cancelTrip() {
     }
 
     private BusPassCreateDTO createBusPassRequest(BusPassType type) {

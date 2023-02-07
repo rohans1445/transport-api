@@ -1,16 +1,10 @@
 package com.example.transportapi.IntegrationTests;
 
 import com.example.transportapi.dto.StopCreateDTO;
-import com.example.transportapi.entity.Bus;
-import com.example.transportapi.entity.OfficeLocation;
-import com.example.transportapi.entity.Route;
-import com.example.transportapi.entity.Stop;
+import com.example.transportapi.entity.*;
 import com.example.transportapi.entity.enums.City;
 import com.example.transportapi.entity.enums.Shift;
-import com.example.transportapi.repository.BusRepository;
-import com.example.transportapi.repository.OfficeLocationRepository;
-import com.example.transportapi.repository.RouteRepository;
-import com.example.transportapi.repository.StopRepository;
+import com.example.transportapi.repository.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
@@ -25,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalTime;
 import java.util.List;
 
+import static com.example.transportapi.IntegrationTests.AuthControllerTest.getToken;
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -32,6 +27,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 import static org.junit.jupiter.api.Assertions.*;
+import static util.TestUtils.getAdmin;
+import static util.TestUtils.getUser;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -50,6 +47,9 @@ class StopControllerTest {
     StopRepository stopRepository;
 
     @Autowired
+    UserRepository userRepository;
+
+    @Autowired
     ObjectMapper objectMapper;
 
     OfficeLocation officeLocation1;
@@ -58,6 +58,8 @@ class StopControllerTest {
     Route route2;
     Stop stop1;
     Stop stop2;
+    User user1;
+    User admin;
 
     @BeforeEach
     void setUp() {
@@ -93,6 +95,11 @@ class StopControllerTest {
 
         route1.setStops(List.of(stop1, stop2));
 
+        user1 = getUser();
+        admin = getAdmin();
+
+
+        userRepository.saveAll(List.of(user1, admin));
         routeRepository.save(route1);
         routeRepository.save(route2);
     }
@@ -100,17 +107,21 @@ class StopControllerTest {
     @AfterEach
     void tearDown() {
         routeRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
     void givenValidStopId_whenGetStopByID_thenReturnStop() throws Exception {
-        mockMvc.perform(get("/api/stops/{id}", stop1.getId()))
+        String token = getToken("admin");
+        mockMvc.perform(get("/api/stops/{id}", stop1.getId())
+                        .header("Authorization", token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is("R1-S1")));
     }
 
     @Test
     void givenNewStop_whenCreateNewStop_thenResponse201() throws Exception {
+        String token = getToken("admin");
         StopCreateDTO stop = new StopCreateDTO();
         stop.setCity(City.BANGALORE);
         stop.setName("create_route");
@@ -118,6 +129,7 @@ class StopControllerTest {
         stop.setExpectedArrival(LocalTime.parse("08:30"));
 
         mockMvc.perform(post("/api/stops")
+                .header("Authorization", token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(stop)))
                 .andExpect(status().isCreated())
@@ -126,7 +138,9 @@ class StopControllerTest {
 
     @Test
     void givenValidRouteId_whenGetAllStopsForRouteId_thenReturnListOfStopsForRouteId() throws Exception {
-        mockMvc.perform(get("/api/routes/{id}/stops", route1.getId()))
+        String token = getToken("user1");
+        mockMvc.perform(get("/api/routes/{id}/stops", route1.getId())
+                        .header("Authorization", token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.size()", is(2)));
     }

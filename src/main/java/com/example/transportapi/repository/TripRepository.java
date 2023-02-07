@@ -3,6 +3,7 @@ package com.example.transportapi.repository;
 import com.example.transportapi.dto.TripPassengersDTO;
 import com.example.transportapi.entity.Trip;
 import com.example.transportapi.entity.enums.Shift;
+import com.example.transportapi.entity.enums.TripStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -20,5 +21,7 @@ public interface TripRepository extends JpaRepository<Trip, Long> {
             "JOIN buspass.pickupPoint buspass_stop " +
             "WHERE t.date=:date AND buspass.shift=:shift AND buspass_route.id=:routeId")
     List<TripPassengersDTO> getAllPassengersInATrip(LocalDate date, Shift shift, Long routeId);
+
+    List<Trip> findAllByStatus(TripStatus status);
 
 }

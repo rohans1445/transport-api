@@ -4,6 +4,7 @@ import com.example.transportapi.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -14,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static org.springframework.http.HttpMethod.*;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
@@ -38,6 +40,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/api/auth/**").permitAll()
+                .antMatchers(POST, "/api/bus").hasRole("ADMIN")
+                .antMatchers(GET, "/api/bus/{id}").hasAnyRole("ADMIN", "USER")
+                .antMatchers(GET, "/api/bus").hasRole("ADMIN")
+                .antMatchers(GET, "/api/bus/available").hasRole("ADMIN")
+                .antMatchers(POST, "/api/buspass/**").hasAnyRole("ADMIN", "USER")
+                .antMatchers(GET, "/api/officeLocation/**").hasAnyRole("ADMIN", "USER")
+                .antMatchers(POST, "/api/officeLocation").hasRole("ADMIN")
+                .antMatchers(GET, "/api/routes/{id}").hasAnyRole("ADMIN", "USER")
+                .antMatchers(POST, "/api/routes").hasAnyRole("ADMIN")
+                .antMatchers(PUT, "/api/routes/{id}").hasAnyRole("ADMIN")
+                .antMatchers(GET, "/api/routes/{id}/stops").hasAnyRole("ADMIN", "USER")
+                .antMatchers(GET, "/api/stops/{id}").hasAnyRole("ADMIN", "USER")
+                .antMatchers(POST, "/api/stops").hasRole("ADMIN")
+                .antMatchers(GET, "/api/trips/**").hasAnyRole("ADMIN", "USER")
+                .antMatchers(PATCH, "/api/trips/{id}/status").hasAnyRole("ADMIN", "USER")
+                .antMatchers(POST, "/api/trips/{id}/verify").hasAnyRole("ADMIN", "USER")
                 .antMatchers("/api/user/**").authenticated()
                 .and()
                 .exceptionHandling()

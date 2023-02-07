@@ -26,10 +26,8 @@ public class BusPassController {
     private final BusPassService busPassService;
     private final BusPassMapper passMapper;
     private final TripMapper tripMapper;
-    private final TripService tripService;
 
     @PostMapping("/buspass")
-    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<BusPassResponseDTO> createBusPass(@RequestBody BusPassCreateDTO busPassCreateDTO){
         BusPass savedBusPass = busPassService.saveBusPass(busPassCreateDTO);
         BusPassResponseDTO res = passMapper.toBusPassResponseDTO(savedBusPass);

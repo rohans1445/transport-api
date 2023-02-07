@@ -1,9 +1,10 @@
 package com.example.transportapi.util;
 
 import com.example.transportapi.entity.BusPass;
-import com.example.transportapi.entity.enums.BusPassStatus;
-import com.example.transportapi.entity.enums.BusPassType;
+import com.example.transportapi.entity.Trip;
+import com.example.transportapi.entity.enums.TripStatus;
 import com.example.transportapi.repository.BusPassRepository;
+import com.example.transportapi.repository.TripRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -16,7 +17,6 @@ import java.util.stream.Collectors;
 
 import static com.example.transportapi.entity.enums.BusPassStatus.ACTIVE;
 import static com.example.transportapi.entity.enums.BusPassStatus.EXPIRED;
-import static com.example.transportapi.entity.enums.BusPassType.HYBRID;
 import static com.example.transportapi.entity.enums.BusPassType.SINGLE;
 
 @Component
@@ -25,6 +25,7 @@ import static com.example.transportapi.entity.enums.BusPassType.SINGLE;
 public class PassUtils {
 
     private final BusPassRepository busPassRepository;
+    private final TripRepository tripRepository;
 
     @Scheduled(fixedDelay = 3600000)
     @Transactional
@@ -51,6 +52,28 @@ public class PassUtils {
 
         if(!updatedPasses.isEmpty()){
             updatedPasses.forEach(pass -> message.append(pass.getId()).append(", "));
+            log.info(String.valueOf(message));
+        }
+
+    }
+
+    @Scheduled(fixedDelay = 3600000)
+    @Transactional
+    public void tripCleanupJob(){
+        List<Trip> trips = tripRepository.findAllByStatus(TripStatus.ACTIVE);
+        LocalDate now = LocalDate.now();
+        StringBuilder message = new StringBuilder("Updated trips to [COMPLETED_WITHOUT_VERIFICATION]: ");
+
+        List<Trip> updatedTrips = trips.stream()
+                .peek(trip -> {
+                    if (trip.getDate().isBefore(now) && !trip.isTripVerified()) {
+                        trip.setStatus(TripStatus.COMPLETED_WITHOUT_VERIFICATION);
+                        log.info("Pass ID [" + trip.getId() + "] set to [COMPLETED_WITHOUT_VERIFICATION]");
+                    }
+                }).filter(trip -> trip.getStatus().equals(TripStatus.COMPLETED_WITHOUT_VERIFICATION)).collect(Collectors.toList());
+
+        if(!updatedTrips.isEmpty()){
+            updatedTrips.forEach(trip -> message.append(trip.getId()).append(", "));
             log.info(String.valueOf(message));
         }
 

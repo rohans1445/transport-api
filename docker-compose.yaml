@@ -1,0 +1,26 @@
+version: "3"
+services:
+  mysqldb:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+    ports:
+      - "3307:3306"
+    networks:
+      - spring-net
+    restart: unless-stopped
+  transport-api:
+    image: rohans433/transport-api:latest
+    environment:
+      MYSQL_HOST: ${MYSQL_HOST}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_PORT: ${MYSQL_PORT}
+      JWT_SECRET: ${JWT_SECRET}
+    ports:
+      - "5050:8080"
+    networks:
+      - spring-net
+    restart: unless-stopped
+
+networks:
+  spring-net:

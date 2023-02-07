@@ -4,11 +4,13 @@ import com.example.transportapi.dto.RouteCreateDTO;
 import com.example.transportapi.entity.Bus;
 import com.example.transportapi.entity.OfficeLocation;
 import com.example.transportapi.entity.Route;
+import com.example.transportapi.entity.User;
 import com.example.transportapi.entity.enums.City;
 import com.example.transportapi.entity.enums.Shift;
 import com.example.transportapi.repository.BusRepository;
 import com.example.transportapi.repository.OfficeLocationRepository;
 import com.example.transportapi.repository.RouteRepository;
+import com.example.transportapi.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -24,10 +26,13 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
+import static com.example.transportapi.IntegrationTests.AuthControllerTest.getToken;
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static util.TestUtils.getAdmin;
+import static util.TestUtils.getUser;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -43,6 +48,9 @@ class RouteControllerTest {
     RouteRepository routeRepository;
 
     @Autowired
+    UserRepository userRepository;
+
+    @Autowired
     BusRepository busRepository;
 
     @Autowired
@@ -54,6 +62,8 @@ class RouteControllerTest {
     Bus bus2;
     Route route1;
     Route route2;
+    User user1;
+    User admin;
 
     @BeforeEach
     void setUp() {
@@ -84,6 +94,10 @@ class RouteControllerTest {
         route2.setOfficeLocation(officeLocation2);
         route2.setShift(Shift.MORNING);
 
+        user1 = getUser();
+        admin = getAdmin();
+
+        userRepository.saveAll(List.of(user1, admin));
         routeRepository.save(route1);
         routeRepository.save(route2);
         busRepository.save(bus2);
@@ -93,24 +107,31 @@ class RouteControllerTest {
     void tearDown() {
         routeRepository.deleteAll();
         busRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
     void givenOfficeLocationID_whenGetAllRoutesForLocation_thenReturnAllRoutes() throws Exception {
-        mockMvc.perform(get("/api/officeLocation/{id}/routes", officeLocation1.getId()))
+        String token = getToken("admin");
+
+        mockMvc.perform(get("/api/officeLocation/{id}/routes", officeLocation1.getId())
+                        .header("Authorization", token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].officeLocation", is("TL-1")));
     }
 
     @Test
     void givenRouteId_whenGetRouteByID_thenReturnRoute() throws Exception {
-        mockMvc.perform(get("/api/routes/{id}", route1.getId()))
+        String token = getToken("admin");
+        mockMvc.perform(get("/api/routes/{id}", route1.getId())
+                        .header("Authorization", token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is("test-route")));
     }
 
     @Test
     void givenNewRoute_whenCreateNewRoute_thenReturnCreatedRoute() throws Exception {
+        String token = getToken("admin");
 
         RouteCreateDTO route = RouteCreateDTO.builder()
                 .name("test-create-route")
@@ -119,6 +140,7 @@ class RouteControllerTest {
                 .build();
 
         mockMvc.perform(post("/api/routes")
+                        .header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(route)))
                 .andExpect(status().isCreated())
@@ -128,6 +150,7 @@ class RouteControllerTest {
 
     @Test
     void givenExistingRoute_whenUpdateRoute_thenReturnUpdatedRoute() throws Exception {
+        String token = getToken("admin");
         RouteCreateDTO route = RouteCreateDTO.builder()
                 .name("test-update-route")
                 .shift(Shift.AFTERNOON)
@@ -137,6 +160,7 @@ class RouteControllerTest {
 
         // update route2
         mockMvc.perform(put("/api/routes/{id}", route2.getId())
+                        .header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(route)))
                 .andExpect(status().isOk())
@@ -149,6 +173,7 @@ class RouteControllerTest {
 
     @Test
     void givenExistingRoute_whenUpdateRouteBusDetailsWithBusAlreadyAssigned_thenResponse400() throws Exception {
+        String token = getToken("admin");
         RouteCreateDTO route = RouteCreateDTO.builder()
                 .name("test-update-route")
                 .shift(Shift.AFTERNOON)
@@ -157,6 +182,7 @@ class RouteControllerTest {
                 .build();
 
         mockMvc.perform(put("/api/routes/{id}", route2.getId())
+                        .header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(route)))
                 .andExpect(status().isBadRequest());
